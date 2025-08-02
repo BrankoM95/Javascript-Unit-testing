@@ -11,6 +11,10 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "mocha": "^11.7.1"
+    "chai": "^5.2.1",
+    "chai-as-promised": "^8.0.1",
+    "chromedriver": "^138.0.5",
+    "mocha": "^11.7.1",
+    "selenium-webdriver": "^4.34.0"
   }
 }
