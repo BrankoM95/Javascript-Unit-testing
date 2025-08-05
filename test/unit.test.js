@@ -26,7 +26,6 @@ describe('Maths class test', function() {
 
         assert.equal(actual,expected);
 
-
     });
 
 });
