@@ -6,7 +6,7 @@ const { assert,expect } = require('chai');
 const {By, Key,until} = require("selenium-webdriver");
 
 
-describe.only('Selenium tests', function () {
+describe('Selenium tests', function () {
     let driver;
 
     before(function () {
@@ -57,6 +57,6 @@ describe.only('Selenium tests', function () {
         await driver.wait(until.elementLocated(By.id('search')));
         expect(await driver.getTitle()).to.contain('qa.rs');
 
-
     });
+
 });
