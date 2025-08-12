@@ -12,9 +12,6 @@ module.exports = class RegisterPage {
         this.#driver.get('http://shop.qa.rs/register');
     }
 
-    getCurrentUrl() {
-        return this.#driver.getCurrentUrl();
-    }
 
     getRegisterButton() {
         return this.#driver.findElement(By.name('register'));

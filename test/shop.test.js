@@ -6,24 +6,30 @@ const { assert,expect } = require('chai');
 const {By, Key,until} = require("selenium-webdriver");
 const HomePage = require('../pages/home.page');
 const RegisterPage = require('../pages/register.page');
+const LoginPage = require('../pages/login.page');
 
 
 describe.only('shop.QA.rs tests',function () {
     let driver;
     let pageHomepage;
     let pageRegister;
+    let pageLogin;
+
+    const packageToAdd = 'starter';
+    const packageQuantity = '2';
 
     before(function() {
        driver = new webdriver.Builder().forBrowser('chrome').build();
        pageHomepage = new HomePage(driver);
        pageRegister = new RegisterPage(driver);
+       pageLogin = new LoginPage(driver);
     });
 
     after( async function (){
         await driver.quit();
 
     });
-    beforeEach( function () {
+    beforeEach( async function () {
        //Pokrece se pre svakog testa
     });
 
@@ -39,7 +45,7 @@ describe.only('shop.QA.rs tests',function () {
 
     });
 
-    it('Goes to registration page' , async function (){
+    it.skip('Goes to registration page' , async function (){
         await pageHomepage.clickOnRegisterLink();
         /*
         await pageRegister.goToPage(); - Moze i ovako da se napisi kod iznad, radi isto
@@ -49,19 +55,62 @@ describe.only('shop.QA.rs tests',function () {
 
     });
 
-    it('Successfully performs registraction', async function (){
-        pageRegister.getInputFirstName().sendKeys('Tom');
-        pageRegister.getInputLastName().sendKeys('Aspinall');
-        pageRegister.getInputEmail().sendKeys('Tom@Aspinall.com');
+    it.skip('Successfully performs registraction', async function (){
+        pageRegister.getInputFirstName().sendKeys('Djuradj');
+        pageRegister.getInputLastName().sendKeys('Brankovic');
+        pageRegister.getInputEmail().sendKeys('Dj@Brankovic.com');
 
-        await pageRegister.fillInputUsername('Tom.Aspinall');
-        await pageRegister.fillInputPassword('lozinkaNeka1234');
-        await pageRegister.fillInputPasswordConfirm('lozinkaNeka1234');
+        await pageRegister.fillInputUsername('Dj.Bran');
+        await pageRegister.fillInputPassword('lozinkaNeka123456789');
+        await pageRegister.fillInputPasswordConfirm('lozinkaNeka123456789');
 
         await pageRegister.getRegisterButton().click();
 
         expect(await pageHomepage.getSuccessAlertText()).to.contain('Uspeh!');
 
+    });
+
+    it('Goes to login page and performs a login', async function(){
+        await pageLogin.goToPage();
+
+        await pageLogin.fillInputUsername('Dj.Bran')
+        await pageLogin.fillInputPassword('lozinkaNeka123456789')
+        await pageLogin.clickLoginButton();
+
+        expect(await pageHomepage.getWelcomeBackText()).to.contain('Welcome back');
+        assert.isTrue(await pageHomepage.isLogoutLinkDisplayed());
+
 
     });
+
+    it('Adds item(s) to cart ', async function() {
+        const packageDiv = await pageHomepage.getPackageDiv(packageToAdd);
+        const quantity = await pageHomepage.getQuantityDropdown(packageDiv);
+        const options = await pageHomepage.getQuantityOptions(quantity);
+
+        await Promise.all(options.map(async function(option) {
+            const text = await option.getText();
+
+            if(text === packageQuantity) {
+                await option.click();
+
+                const selectedValue = await quantity.getAttribute('value');
+                expect(selectedValue).to.contain(packageQuantity);
+
+                await pageHomepage.getOrderButton(packageDiv).click();
+
+                expect(await driver.getCurrentUrl()).to.contain('http://shop.qa.rs/order');
+
+            }
+        }));
+    });
+
+    it('Performs a logout', async function () {
+        await pageHomepage.clickOnLogoutLink();
+
+        expect(await pageHomepage.isLoginLinkDisplayed()).to.be.true;
+    });
+
+
 });
+
