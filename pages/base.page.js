@@ -20,4 +20,10 @@ module.exports = class BasePage {
     getPageHeaderTitle () {
         return this.driver().findElement(By.tagName('h1')).getText();
     }
+
+    async clickOnViewShoppingCartlink () {
+        const linkShoppingCart = await this.driver().findElement(By.partialLinkText('shopping cart'));
+        await linkShoppingCart.click();
+    }
+
 }
