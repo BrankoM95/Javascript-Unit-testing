@@ -7,6 +7,7 @@ const {By, Key,until} = require("selenium-webdriver");
 const HomePage = require('../pages/home.page');
 const RegisterPage = require('../pages/register.page');
 const LoginPage = require('../pages/login.page');
+const CartPage = require('../pages/cart.page');
 
 
 describe.only('shop.QA.rs tests',function () {
@@ -14,15 +15,18 @@ describe.only('shop.QA.rs tests',function () {
     let pageHomepage;
     let pageRegister;
     let pageLogin;
+    let pageCart;
 
     const packageToAdd = 'starter';
     const packageQuantity = '2';
 
-    before(function() {
+    before(async function() {
        driver = new webdriver.Builder().forBrowser('chrome').build();
        pageHomepage = new HomePage(driver);
        pageRegister = new RegisterPage(driver);
        pageLogin = new LoginPage(driver);
+       pageCart = new CartPage(driver);
+
     });
 
     after( async function (){
@@ -103,6 +107,24 @@ describe.only('shop.QA.rs tests',function () {
 
             }
         }));
+
+
+    });
+
+    it('Opens shopping cart', async function () {
+        await pageHomepage.clickOnViewShoppingCartlink();
+        expect(await pageCart.getCurrentUrl()).to.be.eq('http://shop.qa.rs/cart');
+        expect(await pageCart.getPageHeaderTitle()).to.contain('Order');
+
+    });
+
+    it('Verifies items is in the cart', async () =>{
+        const orderRow = await pageCart.getOrderRow(packageToAdd.toUpperCase());
+        const orderQuantity = await pageCart.getOrderQuantity(orderRow);
+
+        expect(await orderQuantity.getText()).to.be.eq(packageQuantity);
+
+
     });
 
     it('Performs a logout', async function () {
@@ -114,3 +136,4 @@ describe.only('shop.QA.rs tests',function () {
 
 });
 
+//
